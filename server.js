@@ -21,3 +21,16 @@ db.once('open', () => {
     console.log(`API server for ${activity} running on port ${PORT}!`);
   });
 });
+
+
+// const express = require('express');
+// const app = express();
+
+// // Middleware to parse JSON bodies
+// app.use(express.json());
+
+// // Other middleware and route handlers...
+
+// app.listen(3000, () => {
+//   console.log('Server is running on port 3000');
+// });
