@@ -1,10 +1,7 @@
 const Thought = require('../models/Thought');
 const User = require('../models/User');
 
-
 module.exports = {
-
-
   async getThoughts(req, res) {
     try {
       const thoughts = await Thought.find();
@@ -13,7 +10,6 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-
 
   async getThoughtsId(req, res) {
     try {
@@ -27,25 +23,21 @@ module.exports = {
     }
   },
 
-
   async createThought(req, res) {
     try {
-        const { thoughtText, username } = req.body;
-        
-        // Check if thoughtText is provided
-        if (!thoughtText) {
-            return res.status(400).json({ error: "Thought text is required." });
-        }
-        
-        // Create new thought
-        const newThought = await Thought.create({ thoughtText, username });
+      const { thoughtText, username } = req.body;
 
-        res.status(201).json(newThought);
+      if (!thoughtText) {
+        return res.status(400).json({ error: "Thought text is required." });
+      }
+
+      const newThought = await Thought.create({ thoughtText, username });
+
+      res.status(201).json(newThought);
     } catch (err) {
-        res.status(400).json(err);
+      res.status(400).json(err);
     }
-},
-
+  },
 
   async updateThoughtId(req, res) {
     try {
@@ -63,12 +55,11 @@ module.exports = {
     }
   },
 
-
   async deleteThoughtId(req, res) {
     try {
       const deleteThought = await Thought.findByIdAndDelete(req.params.thoughtId);
       if (!deleteThought) {
-        return res.status(404).json({ message: 'No thought find with the requested Id' });
+        return res.status(404).json({ message: 'No thought found with the requested Id' });
       }
       const user = await User.findById(deleteThought.userId);
       if (user) {
@@ -101,21 +92,27 @@ module.exports = {
 
   async deleteReaction(req, res) {
     try {
-      const { thoughtId, reactionId } = req.params;
-      const thought = await Thought.findById(thoughtId);
-      if (!thought) {
-        return res.status(404).json({ message: 'Thought not found' });
-      }
-      const reactionIndex = thought.reactions.findIndex(reaction => reaction.reactionId.toString() === reactionId);
-      if (reactionIndex === -1) {
-        return res.status(404).json({ message: 'Reaction not found' });
-      }
-      thought.reactions.splice(reactionIndex, 1);
-      await thought.save();
+        const { thoughtId, reactionId } = req.params;
 
-      res.json({ message: 'Reaction deleted successfully' });
+        // Find the thought by 'thoughtId'
+        const thought = await Thought.findById(thoughtId);
+        if (!thought) {
+            return res.status(404).json({ message: 'Thought not found' });
+        }
+
+        // Find the index of the reaction with the given reactionId in the thought's reactions array
+        const reactionIndex = thought.reactions.findIndex(reaction => reaction.reactionId.toString() === reactionId);
+        if (reactionIndex === -1) {
+            return res.status(404).json({ message: 'Reaction not found' });
+        }
+
+        // Remove the reaction from the thought's reactions array
+        thought.reactions.splice(reactionIndex, 1);
+        await thought.save();
+
+        res.json({ message: 'Reaction deleted successfully' });
     } catch (err) {
-      res.status(500).json(err);
+        res.status(500).json(err);
     }
-  }
+}
 };
